@@ -1,0 +1,142 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "getfaultline"
+dynamic = ["version"]
+description = "Python SDK for Faultline error tracking"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "Faultline" }]
+keywords = ["faultline", "error-tracking", "monitoring", "sdk", "flask", "django", "fastapi"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Framework :: Django",
+  "Framework :: Flask",
+  "Framework :: FastAPI",
+  "Topic :: Software Development :: Debuggers",
+  "Topic :: System :: Monitoring",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+flask = ["flask>=2.2"]
+django = ["django>=4.2"]
+fastapi = ["fastapi>=0.100"]
+test = [
+  "pytest>=8",
+  "pydantic>=2.5",
+  "flask>=2.2",
+  "fastapi>=0.100",
+  "httpx>=0.24",
+]
+dev = [
+  "getfaultline[test]",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "import-linter>=2.0",
+  "build>=1.2",
+  "twine>=5",
+]
+
+[project.urls]
+Homepage = "https://www.faultsline.dev"
+Source = "https://github.com/getfaultline/faultline-python"
+Issues = "https://github.com/getfaultline/faultline-python/issues"
+
+[tool.hatch.version]
+path = "src/faultline/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/faultline"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/faultline", "tests", "examples", "README.md", "ARCHITECTURE.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "BLE", "PT", "PIE", "RET", "C4"]
+ignore = [
+  "SIM105", # plain try/except/pass is cheaper than contextlib.suppress on hot paths
+  "BLE001", # the SDK deliberately catches broad exceptions so it never crashes the host app
+  "RUF001", # the ellipsis character is part of the contract
+  "RUF022",
+  "UP006",  # keep typing.Dict etc. where it helps 3.9 runtime evaluation
+  "UP007",
+  "UP035",
+  "UP045",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B011", "PT011", "PT017", "PT018", "SIM117", "RUF012", "E501"]
+"examples/**" = ["B904"]
+
+[tool.mypy]
+strict = true
+warn_unreachable = true
+files = ["src/faultline", "tests", "examples"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+# Tests deliberately build malformed events and use untyped framework decorators.
+module = ["tests.*", "examples.*"]
+disable_error_code = ["typeddict-item", "typeddict-unknown-key", "untyped-decorator", "unused-ignore", "index"]
+
+[[tool.mypy.overrides]]
+module = ["django.*", "asgiref.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = [
+  "error::pytest.PytestUnraisableExceptionWarning",
+  "ignore:Using `httpx` with `starlette.testclient` is deprecated",
+]
+
+[tool.importlinter]
+root_package = "faultline"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Clean Architecture layers: integrations | infrastructure > application > domain"
+type = "layers"
+containers = ["faultline"]
+layers = [
+  "integrations | infrastructure",
+  "application",
+  "domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "Domain is pure: no I/O, threads or runtime introspection"
+type = "forbidden"
+source_modules = ["faultline.domain"]
+forbidden_modules = [
+  "os", "sys", "io", "socket", "ssl", "http", "threading", "asyncio", "linecache",
+  "logging", "gzip", "subprocess", "platform", "contextvars", "atexit",
+]
+
+[[tool.importlinter.contracts]]
+name = "Framework packages are only imported by their own integration module"
+type = "forbidden"
+source_modules = ["faultline.domain", "faultline.application", "faultline.infrastructure"]
+forbidden_modules = ["flask", "django", "fastapi", "starlette"]

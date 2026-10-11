@@ -101,7 +101,7 @@ module = ["tests.*", "examples.*"]
 disable_error_code = ["typeddict-item", "typeddict-unknown-key", "untyped-decorator", "unused-ignore", "index"]
 
 [[tool.mypy.overrides]]
-module = ["django.*", "asgiref.*"]
+module = ["django.*", "asgiref.*", "uvicorn.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

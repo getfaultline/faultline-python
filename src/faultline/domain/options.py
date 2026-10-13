@@ -14,7 +14,7 @@ from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple, Type, Un
 from .event import Event
 from .limits import MAX_BREADCRUMBS
 
-DEFAULT_ENDPOINT = "https://www.faultsline.dev"
+DEFAULT_ENDPOINT = "https://api.faultsline.dev"
 INGEST_PATH = "/api/v1/ingest/events"
 
 #: Built-in integrations and whether they are on by default.

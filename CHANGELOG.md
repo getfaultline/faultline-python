@@ -4,7 +4,14 @@ All notable changes to `getfaultline` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - unreleased
+## [0.1.1] - 2026-10-13
+
+### Changed
+
+- The default `endpoint` is now `https://api.faultsline.dev` (was `https://www.faultsline.dev`, which
+  serves the website). Apps that set `endpoint` explicitly are unaffected.
+
+## [0.1.0] - 2026-10-11
 
 ### Added
 

@@ -71,7 +71,7 @@ with faultline.with_scope() as scope:
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `api_key` | `str` | **required** | Public ingest key (`flt_ingest_...`). Sent as `X-Faultline-Key`. |
-| `endpoint` | `str` | `https://www.faultsline.dev` | Base URL of the Faultline server. Override it when self-hosting. |
+| `endpoint` | `str` | `https://api.faultsline.dev` | Base URL of the Faultline server. Override it when self-hosting. |
 | `environment` | `str` | `None` | e.g. `production`, `staging`. |
 | `release` | `str` | `None` | e.g. `api@1.4.2` or a git sha. |
 | `server_name` | `str` | `socket.gethostname()` | Reported as `serverName`. |
